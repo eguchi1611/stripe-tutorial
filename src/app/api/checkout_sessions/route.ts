@@ -2,13 +2,21 @@ import { redirect } from "next/navigation";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string);
+
 export async function POST(req: Request) {
   let url = "";
   try {
     const session = await stripe.checkout.sessions.create({
       line_items: [
         {
-          price: "price_1Q5VqFDmzAPgcoPhPXuzsBdZ",
+          // ここで動的な商品生成
+          price_data: {
+            currency: "jpy",
+            product_data: {
+              name: "動的商品: " + crypto.randomUUID(),
+            },
+            unit_amount: 2000 + Math.floor(Math.random() * 1000),
+          },
           quantity: 1,
         },
       ],
